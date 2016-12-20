@@ -146,18 +146,17 @@ class ilActions {
 	public function updateUserData($userdata) {
 		$usr = $this->uutils->getUser();
 		$bday = $userdata['birthday']["date"];
-
 		$usr->setBirthday($bday);
 		$usr->setFirstname($userdata['firstname']);
 		$usr->setLastname($userdata['lastname']);
 		$usr->setStreet($userdata['street']);
 		$usr->setZipcode($userdata['zipcode']);
 		$usr->setCity($userdata['city']);
-		$this->uutils->setPrivateStreet($userdata['p_street']);
-		$this->uutils->setPrivateCity($userdata['p_zipcode']);
-		$this->uutils->setPrivateZipcode($userdata['p_city']);
-
 		$usr->update();
+		$this->uutils->setPrivateStreet($userdata['p_street']);
+		$this->uutils->setPrivateCity($userdata['p_city']);
+		$this->uutils->setPrivateZipcode($userdata['p_zipcode']);
+
 	}
 
 }
