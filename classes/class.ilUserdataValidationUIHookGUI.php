@@ -8,7 +8,7 @@ require_once( __DIR__ ."/ilSettings.php");
 require_once( __DIR__ ."/ilActions.php");
 //require_once "./Services/User/classes/class.ilObjUserGUI.php";
 require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
-
+require_once('./Services/GEV/Utils/classes/class.gevUserUtils.php');
 use CaT\Plugins\UserdataValidation;
 
 /**
@@ -43,9 +43,12 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 	 * initialize actions for plugin
 	 */
 	private function initActions() {
-		$db = new UserdataValidation\ilDB($this->gDB);
-		$settings = new UserdataValidation\ilSettings();
-		$this->actions = new UserdataValidation\ilActions($db, $settings);
+		if(	$this->gUser->getId() != 0) {
+			$db = new UserdataValidation\ilDB($this->gDB);
+			$settings = new UserdataValidation\ilSettings();
+			$user_utils = gevUserUtils::getInstance($this->gUser->getId());
+			$this->actions = new UserdataValidation\ilActions($db, $settings, $user_utils);
+		}
 	}
 
 	/**
@@ -53,44 +56,66 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 	 */
 	private function initUserDataForm() {
 		$form = new \ilPropertyFormGUI();
-		$fields = array(
-			'firstname' => $this->gUser->getFirstname(),
-			'lastname' => $this->gUser->getLastname(),
-			'birthday' => $this->gUser->getBirthday(),
-			'street' => $this->gUser->getStreet(),
-			'zipcode' => $this->gUser->getZipcode(),
-			'city' => $this->gUser->getCity(),
+		$formitems = array(
+			'generic' => array(
+				'firstname' => $this->gUser->getFirstname(),
+				'lastname' => $this->gUser->getLastname(),
+				'birthday' => $this->gUser->getBirthday(),
+			),
+			'buiz' => array(
+				'street' => $this->gUser->getStreet(),
+				'zipcode' => $this->gUser->getZipcode(),
+				'city' => $this->gUser->getCity(),
+			),
+			'priv' => array( //from user utils!
+				'p_street' => $this->actions->udfPrivateStreet(),
+				'p_zipcode' => $this->actions->udfPrivateZipcode(),
+				'p_city' => $this->actions->udfPrivateCity(),
+			)
+
 		);
-		$optional = array('street', 'zipcode', 'city');
+		$optional = array('p_street', 'p_zipcode', 'p_city');
+		$section_titles = array(
+			'generic' => 'gev_personal_data',
+			'buiz' => 'gev_business_contact',
+			'priv' => 'gev_private_contact'
+		);
 
-		foreach($fields as $field => $value) {
-			switch($field) {
-				case 'birthday':
-					$inp = new ilBirthdayInputGUI($this->gLng->txt($field), $field);
-					$inp->setShowEmpty(true);
-					$inp->setStartYear(1900);
-					break;
-				default:
-					$inp = new ilTextInputGUI($this->gLng->txt($field), $field);
-					$inp->setSize(32);
-					$inp->setMaxLength(32);
+		$fieldvalues = array();
+		foreach($formitems as $section => $fields) {
+			$frmsection = new ilFormSectionHeaderGUI();
+			$frmsection->setTitle($this->gLng->txt($section_titles[$section]));
+			$form->addItem($frmsection);
 
+			foreach($fields as $field => $value) {
+				switch($field) {
+					case 'birthday':
+						$inp = new ilBirthdayInputGUI($this->gLng->txt($field), $field);
+						$inp->setShowEmpty(true);
+						$inp->setStartYear(1900);
+						break;
+					default:
+						$inp = new ilTextInputGUI($this->gLng->txt($field), $field);
+						$inp->setSize(32);
+						$inp->setMaxLength(32);
+
+				}
+				if(! in_array($field, $optional)){
+					$inp->setRequired(true);
+				}
+				$form->addItem($inp);
+				$fieldvalues[$field] = $value;
 			}
-			if(! in_array($field, $optional)){
-				$inp->setRequired(true);
-			}
-			$form->addItem($inp);
 		}
-		$form->setValuesByArray($fields);
+
+		$form->setValuesByArray($fieldvalues);
 
 		$inp = new ilHiddenInputGUI('udvalidation', 'udvalidation');
 		$form->addItem($inp);
 		$inp->setValue('udvalidation_update');
 
+		$form->setFormAction('');
 		$form->addCommandButton(self::CMD_UPDATEUSERDATA, $this->txt("update"));
-
-		//$form->setFormAction($this->gCtrl->getFormAction($this->plugin_object));
-		//$form->setFormAction('./');
 
 		return $form;
 	}
@@ -111,9 +136,9 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 	 * @inheritdoc
 	 */
 	function getHTML($a_comp, $a_part, $a_par = array()) {
-
 		if ( 	$a_part != "template_get"
 			|| 	$a_par["tpl_id"] != "Services/MainMenu/tpl.main_menu.html"
+			||	$this->actions == null
 			||	$this->actions->sessionStatus($this->gUser->getId())
 		   ) {
 			return parent::getHTML($a_comp, $a_part, $a_par);
@@ -125,35 +150,41 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 			return parent::getHTML($a_comp, $a_part, $a_par);
 		}
 
+		$this->txt = $this->plugin_object->txtClosure();
+		$form = $this->initUserDataForm();
+
+		//catch form-submission
 		if($_POST && @$_POST['udvalidation'] === 'udvalidation_update') {
-			var_dump($_POST);
-			//die();
+			$form->setValuesByPost();
+
+			if($form->checkInput()) {
+				//update data, do not bother again in this session
+				$this->actions->updateUserData($_POST);
+				$this->actions->storeLastUpdateOfUser();
+				$this->actions->validateSession($this->gUser->getId());
+				return parent::getHTML($a_comp, $a_part, $a_par);
+
+			} else {
+				//validation failed, show errors:
+				foreach ($validation as $field => $msg) {
+					$form_field = $form->getItemByPostVar($field);
+					$form_field->setAlert($this->gLng->txt($msg));
+				}
+			}
 		}
 
-		//user should update, session is not set: show dialog
-		$this->txt = $this->plugin_object->txtClosure();
+		//user should update, session is not set or validation failed: show dialog
+
 		$description = $this->actions->pluginSettingsDescription();
-		$form = $this->initUserDataForm();
 		$formhtml = $form->getHtml();
 
-/*
-		$lnk = $this->gCtrl->getLinkTargetByClass(strtolower(get_class($this)), self::CMD_UPDATEUSERDATA, '', false, false);
-var_dump($lnk);
-die();
-		$script = $this->getLinkTargetByClass(strtolower(get_class($a_gui_obj)), $a_cmd,
-			"", $a_asynch, false);
-*/
 
 		// TODO: This should totally go to a template:
 		$ann = <<<HTML
 
 <div class="gev_ann" style="position: fixed; background-color: #000000; left:0; top:0; height:100%; width:100%; opacity: 0.5; visibility: visible; display: block;">
-
 </div>
 <div  class="gev_ann" style="z-index: 1000; background-color: #CECECE; opacity: 1; margin: -350px 0 0 -400px; width: 800px; height: 700px; position: absolute; top:50%; left: 50%; overflow: hidden;" >
-	<!--div style="float: right; margin-top: 15px; margin-bottom: 5px; margin-right: 15px;">
-			<a id="gev_ann_close" href="#">Schließen (X)</a>
-	</div-->
 	<div class="ilClearFloat"></div>
 	<div class="catTitle" style="background-color: #FFFFFF; padding: 10px;">
 		<div>

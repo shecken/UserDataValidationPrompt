@@ -9,10 +9,26 @@ require_once(__DIR__ .'/ilSettings.php');
  *
  */
 class ilActions {
+	/**
+	 * @var UserdataValidation\ilDB
+	 */
+	protected $db;
 
-	public function __construct($db, $settings) {
+	/**
+	 * @var UserdataValidation\ilSettings
+	 */
+	protected $settings;
+
+	/**
+	 * @var \gevUserUtils
+	 */
+	protected $uutils;
+
+
+	public function __construct($db, $settings, $user_utils) {
 		$this->db = $db;
 		$this->settings = $settings;
+		$this->uutils = $user_utils;
 	}
 
 	/**
@@ -38,7 +54,7 @@ class ilActions {
 	/**
 	 * Returns the
 	 *
-	 * @return 	t
+	 * @return 	\ilDate
 	 */
 	public function lastUpdateOfUser() {
 
@@ -46,10 +62,9 @@ class ilActions {
 
 	/**
 	 * Save the time, the user has last updated his/her data
-	 *
-	 * @param 	t $dat
+	 * (which is now..)
 	 */
-	public function storeLastUpdateOfUser($dat) {
+	public function storeLastUpdateOfUser() {
 
 	}
 
@@ -61,6 +76,7 @@ class ilActions {
 	 * @return 	boolean
 	 */
 	public function sessionStatus($usr_id) {
+		return false;
 		return $_COOKIE["gev_udvalidaton"][$usr_id] === "udvalidaton";
 	}
 
@@ -85,5 +101,53 @@ class ilActions {
 		return true;
 	}
 
+	/**
+	* get UDF-Value from user-utils
+	*
+	* @return string
+	*/
+	public function udfPrivateStreet() {
+		return $this->uutils->getPrivateStreet();
+	}
+
+	/**
+	* get UDF-Value from user-utils
+	*
+	* @return string
+	*/
+
+	public function udfPrivateZipcode() {
+		return $this->uutils->getPrivateZipcode();
+	}
+	/**
+	* get UDF-Value from user-utils
+	*
+	* @return string
+	*/
+	public function udfPrivateCity() {
+		return $this->uutils->getPrivateCity();
+	}
+
+	/**
+	* update user data and udf
+	*
+	* @param array $userdata
+	*/
+	public function updateUserData($userdata) {
+		$usr = $this->uutils->getUser();
+		$bday = $userdata['birthday']["date"];
+
+		$usr->setBirthday($bday);
+		$usr->setFirstname($userdata['firstname']);
+		$usr->setLastname($userdata['lastname']);
+		$usr->setStreet($userdata['street']);
+		$usr->setZipcode($userdata['zipcode']);
+		$usr->setCity($userdata['city']);
+		$this->uutils->setPrivateStreet($userdata['p_street']);
+		$this->uutils->setPrivateCity($userdata['p_zipcode']);
+		$this->uutils->setPrivateZipcode($userdata['p_city']);
+
+		$usr->update();
+	}
 
 }
