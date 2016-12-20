@@ -14,7 +14,6 @@ use CaT\Plugins\UserdataValidation;
 /**
  * Create a form in an overlay to have the user validate his/her personal data.
  *
- * @ilCtrl_Calls ilUserdataValidationUIHookGUI: ilFormPropertyDispatchGUI
  */
 class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 
@@ -95,7 +94,11 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 						$inp->setStartYear(1900);
 						break;
 					default:
-						$inp = new ilTextInputGUI($this->gLng->txt($field), $field);
+						$label = $field;
+						if(substr($label, 0, 2) === 'p_') {
+							$label = substr($label, 2);
+						}
+						$inp = new ilTextInputGUI($this->gLng->txt($label), $field);
 						$inp->setSize(32);
 						$inp->setMaxLength(32);
 
@@ -115,7 +118,7 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 		$inp->setValue('udvalidation_update');
 
 		$form->setFormAction('');
-		$form->addCommandButton(self::CMD_UPDATEUSERDATA, $this->txt("update"));
+		$form->addCommandButton(self::CMD_UPDATEUSERDATA, $this->gLng->txt("update"));
 
 		return $form;
 	}
@@ -160,7 +163,7 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 			if($form->checkInput()) {
 				//update data, do not bother again in this session
 				$this->actions->updateUserData($_POST);
-				$this->actions->storeLastUpdateOfUser();
+				$this->actions->storeLastUpdateOfUser($this->gUser->getId());
 				$this->actions->validateSession($this->gUser->getId());
 				return parent::getHTML($a_comp, $a_part, $a_par);
 
@@ -174,7 +177,6 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 		}
 
 		//user should update, session is not set or validation failed: show dialog
-
 		$description = $this->actions->pluginSettingsDescription();
 		$formhtml = $form->getHtml();
 
@@ -184,16 +186,18 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 
 <div class="gev_ann" style="position: fixed; background-color: #000000; left:0; top:0; height:100%; width:100%; opacity: 0.5; visibility: visible; display: block;">
 </div>
-<div  class="gev_ann" style="z-index: 1000; background-color: #CECECE; opacity: 1; margin: -350px 0 0 -400px; width: 800px; height: 700px; position: absolute; top:50%; left: 50%; overflow: hidden;" >
+<div  class="gev_ann" style="z-index: 1000; background-color: #CECECE; opacity: 1; margin: -350px 0 0 -400px; width: 800px; height: 750px; position: absolute; top:50%; left: 50%; overflow: hidden;" >
 	<div class="ilClearFloat"></div>
 	<div class="catTitle" style="background-color: #FFFFFF; padding: 10px;">
 		<div>
 			<div class="catTitleTextContentsWrapper">
 				<div>
 					<h1 class="catTitleHeader">Überprüfen Sie Ihre Daten!</h1>
-					$description
-					$formhtml
 				</div>
+				<div class="ilClearFloat">
+					$description
+				</div>
+				$formhtml
 			</div>
 		</div>
 	</div>

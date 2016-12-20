@@ -52,20 +52,22 @@ class ilActions {
 	}
 
 	/**
-	 * Returns the
+	 * Returns the time the user has last updated his/her credentials
+	 * via this plugin
 	 *
 	 * @return 	\ilDate
 	 */
-	public function lastUpdateOfUser() {
-
+	public function lastUpdateOfUser($usr_id) {
+		$dat = $this->db->read($usr_id);
+		return $dat;
 	}
 
 	/**
 	 * Save the time, the user has last updated his/her data
 	 * (which is now..)
 	 */
-	public function storeLastUpdateOfUser() {
-
+	public function storeLastUpdateOfUser($usr_id) {
+		$this->db->update($usr_id);
 	}
 
 	/**
@@ -76,7 +78,6 @@ class ilActions {
 	 * @return 	boolean
 	 */
 	public function sessionStatus($usr_id) {
-		return false;
 		return $_COOKIE["gev_udvalidaton"][$usr_id] === "udvalidaton";
 	}
 
@@ -86,7 +87,6 @@ class ilActions {
 	 * @param  	int 	$usr_id
 	 */
 	public function validateSession($usr_id) {
-		//setcookie("gev_udvalidaton[".$usr_id."]", "udvalidaton", time()+31*24*3600);
 		setcookie("gev_udvalidaton[".$usr_id."]", "udvalidaton");
 	}
 
@@ -98,7 +98,17 @@ class ilActions {
 	 * @return 	boolean
 	 */
 	public function shouldUserUpdate($usr_id) {
-		return true;
+		include_once('Services/Calendar/classes/class.ilDateTime.php');
+		$lastup = substr($this->lastUpdateOfUser($usr_id), 0, 10);
+		$last = new \ilDate($lastup, IL_CAL_DATE);
+		$now = new \ilDate(time(),IL_CAL_UNIX);
+
+		$interval = $this->pluginSettingsInterval();
+		$due = new \ilDate(
+			$last->increment(\ilDateTime::DAY, $interval),
+			IL_CAL_UNIX
+		);
+		return $due->get(IL_CAL_UNIX) <= $now->get(IL_CAL_UNIX);
 	}
 
 	/**
@@ -115,10 +125,10 @@ class ilActions {
 	*
 	* @return string
 	*/
-
 	public function udfPrivateZipcode() {
 		return $this->uutils->getPrivateZipcode();
 	}
+
 	/**
 	* get UDF-Value from user-utils
 	*

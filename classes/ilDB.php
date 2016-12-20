@@ -32,6 +32,14 @@ class ilDB {
 	 */
 	public function update($usr_id){
 		assert('is_int($usr_id)');
+		$query = 'REPLACE INTO '
+			.static::TABLE_UDVLASTUPDATE
+			.' (usr_id, lastupdate)'
+			.' VALUES ('
+			.$this->gDB->quote($usr_id, 'integer')
+			.', NOW()'
+			.')';
+		$this->gDB->manipulate($query);
 
 	}
 
@@ -39,22 +47,20 @@ class ilDB {
 	 * get last update of user-data (in scope of this plugin) for user id
 	 *
 	 * @param int $usr_id
+	 * @return string
 	 */
 	public function read($usr_id) {
 		assert('is_int($usr_id)');
+		$query = 'SELECT lastupdate	FROM '
+			.static::TABLE_UDVLASTUPDATE
+			.' WHERE usr_id = '
+			.$this->gDB->quote($usr_id, 'integer');
 
-
-		return $lastupdate;
-	}
-
-	/**
-	 * delete all entries (which is only one...) for given user
-	 *
-	 * @param int $usr_id
-	 */
-	public function delete($usr_id) {
-		assert('is_int($usr_id)');
-
+		$res = $this->gDB->query($query);
+		if($this->gDB->numRows($res) == 0) {
+			return '1970-01-01 00:00:00';
+		}
+		return $this->gDB->fetchAssoc($res)['lastupdate'];
 	}
 
 	/**
