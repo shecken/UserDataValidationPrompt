@@ -194,7 +194,7 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 				<div>
 					<h1 class="catTitleHeader">Überprüfen Sie Ihre Daten!</h1>
 				</div>
-				<div class="ilClearFloat">
+				<div class="ilClearFloat catSubtitle" style="width:750px;">
 					$description
 				</div>
 				$formhtml
