@@ -1,2 +1,3 @@
-# UserdataValidation
-a plugin to have a user update/validate his/her personal data in defined intervals
+# UserDataValidationPrompt
+
+A plugin that prompts users to update/validate their personal data in defined intervals.
