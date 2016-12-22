@@ -155,15 +155,15 @@ class ilActions {
 	*/
 	public function updateUserData($userdata) {
 		$usr = $this->uutils->getUser();
-		$usr->setFirstname($userdata['firstname']);
-		$usr->setLastname($userdata['lastname']);
-		$usr->setStreet($userdata['street']);
-		$usr->setZipcode($userdata['zipcode']);
-		$usr->setCity($userdata['city']);
+		$usr->setFirstname(trim($userdata['firstname']));
+		$usr->setLastname(trim($userdata['lastname']));
+		$usr->setStreet(trim($userdata['street']));
+		$usr->setZipcode(trim($userdata['zipcode']));
+		$usr->setCity(trim($userdata['city']));
 		$usr->update();
-		$this->uutils->setPrivateStreet($userdata['p_street']);
-		$this->uutils->setPrivateCity($userdata['p_city']);
-		$this->uutils->setPrivateZipcode($userdata['p_zipcode']);
+		$this->uutils->setPrivateStreet(trim($userdata['p_street']));
+		$this->uutils->setPrivateCity(trim($userdata['p_city']));
+		$this->uutils->setPrivateZipcode(trim($userdata['p_zipcode']));
 
 	}
 }
