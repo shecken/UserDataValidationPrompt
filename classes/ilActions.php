@@ -1,21 +1,21 @@
 <?php
 /* Copyright (c) 2016, Nils Haagen <nils.haagen@concepts-and-training.de>, Extended GPL, see docs/LICENSE */
 
-namespace CaT\Plugins\UserdataValidation;
+namespace CaT\Plugins\UserDataValidationPrompt;
 require_once(__DIR__ .'/ilSettings.php');
 
 /**
- * Actions for the UserdataValidation-Plugin
+ * Actions for the UserDataValidationPrompt-Plugin
  *
  */
 class ilActions {
 	/**
-	 * @var UserdataValidation\ilDB
+	 * @var UserDataValidationPrompt\ilDB
 	 */
 	protected $db;
 
 	/**
-	 * @var UserdataValidation\ilSettings
+	 * @var UserDataValidationPrompt\ilSettings
 	 */
 	protected $settings;
 
@@ -78,7 +78,7 @@ class ilActions {
 	 * @return 	boolean
 	 */
 	public function sessionStatus($usr_id) {
-		return $_COOKIE["gev_udvalidaton"][$usr_id] === "udvalidaton";
+		return $_COOKIE["gevudvp"][$usr_id] === "gevudvp";
 	}
 
 	/**
@@ -87,7 +87,7 @@ class ilActions {
 	 * @param  	int 	$usr_id
 	 */
 	public function validateSession($usr_id) {
-		setcookie("gev_udvalidaton[".$usr_id."]", "udvalidaton");
+		setcookie("gevudvp[".$usr_id."]", "gevudvp");
 	}
 
 	/**
@@ -158,5 +158,4 @@ class ilActions {
 		$this->uutils->setPrivateZipcode($userdata['p_zipcode']);
 
 	}
-
 }

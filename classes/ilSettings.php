@@ -1,14 +1,14 @@
 <?php
 /* Copyright (c) 2016, Nils Haagen <nils.haagen@concepts-and-training.de>, Extended GPL, see docs/LICENSE */
 
-namespace CaT\Plugins\UserdataValidation;
+namespace CaT\Plugins\UserDataValidationPrompt;
 
 /*
- * implementation of plugin-configuration (settings) for UserdataValidation
+ * implementation of plugin-configuration (settings) for UserDataValidationPrompt
  */
 class ilSettings {
 
-	const SETTINGS_MODULE = "udvalidation";
+	const SETTINGS_MODULE = "gevudvp";
 	const F_INTERVAL = "interval";
 	const F_DESCRIPTION = "description";
 
@@ -29,7 +29,8 @@ class ilSettings {
 	 */
 	public function storeSettings($post) {
 		if(! $this->validateInterval($post[self::F_INTERVAL])) {
-			throw new \InvalidArgumentException('UserdataValidation.ilSettings: interval must be apositive number', 1);
+
+			throw new \InvalidArgumentException('UserDataValidationPrompt.ilSettings: interval must be apositive number', 1);
 		}
 		$this->settings->set(self::F_INTERVAL, $post[self::F_INTERVAL]);
 		$this->settings->set(self::F_DESCRIPTION, $post[self::F_DESCRIPTION]);

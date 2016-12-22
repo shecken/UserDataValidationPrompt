@@ -9,13 +9,14 @@ require_once( __DIR__ ."/ilActions.php");
 //require_once "./Services/User/classes/class.ilObjUserGUI.php";
 require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
 require_once('./Services/GEV/Utils/classes/class.gevUserUtils.php');
-use CaT\Plugins\UserdataValidation;
+
+use CaT\Plugins\UserDataValidationPrompt;
 
 /**
  * Create a form in an overlay to have the user validate his/her personal data.
  *
  */
-class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
+class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 
 	const CMD_UPDATEUSERDATA = "updateUserData";
 
@@ -25,7 +26,7 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 	protected $txt;
 
 	/**
-	 * @var UserdataValidation\ilActions
+	 * @var UserDataValidationPrompt\ilActions
 	 */
 	protected $actions;
 
@@ -43,10 +44,10 @@ class ilUserdataValidationUIHookGUI extends ilUIHookPluginGUI {
 	 */
 	private function initActions() {
 		if(	$this->gUser->getId() != 0) {
-			$db = new UserdataValidation\ilDB($this->gDB);
-			$settings = new UserdataValidation\ilSettings();
+			$db = new UserDataValidationPrompt\ilDB($this->gDB);
+			$settings = new UserDataValidationPrompt\ilSettings();
 			$user_utils = gevUserUtils::getInstance($this->gUser->getId());
-			$this->actions = new UserdataValidation\ilActions($db, $settings, $user_utils);
+			$this->actions = new UserDataValidationPrompt\ilActions($db, $settings, $user_utils);
 		}
 	}
 

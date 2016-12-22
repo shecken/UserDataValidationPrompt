@@ -1,7 +1,7 @@
 <?php
 /* Copyright (c) 2016 Nils Haagen <nils.haagen@concepts-and-training.de> Extended GPL, see ./LICENSE */
 
-namespace CaT\Plugins\UserdataValidation;
+namespace CaT\Plugins\UserDataValidationPrompt;
 
 /**
  * persistence implementation of last data-update for users.
@@ -12,7 +12,7 @@ class ilDB {
 	 */
 	private $gDB;
 
-	const TABLE_UDVLASTUPDATE = 'gevudv_lastupdate';
+	const TABLE_LASTUPDATE = 'gevudvp_lastupdate';
 
 	public function __construct(\ilDB $db) {
 		$this->gDB = $db;
@@ -33,7 +33,7 @@ class ilDB {
 	public function update($usr_id){
 		assert('is_int($usr_id)');
 		$query = 'REPLACE INTO '
-			.static::TABLE_UDVLASTUPDATE
+			.static::TABLE_LASTUPDATE
 			.' (usr_id, lastupdate)'
 			.' VALUES ('
 			.$this->gDB->quote($usr_id, 'integer')
@@ -52,7 +52,7 @@ class ilDB {
 	public function read($usr_id) {
 		assert('is_int($usr_id)');
 		$query = 'SELECT lastupdate	FROM '
-			.static::TABLE_UDVLASTUPDATE
+			.static::TABLE_LASTUPDATE
 			.' WHERE usr_id = '
 			.$this->gDB->quote($usr_id, 'integer');
 
@@ -78,11 +78,9 @@ class ilDB {
 				'notnull' => true
 			)
 		);
-		if(!$this->gDB->tableExists(static::TABLE_UDVLASTUPDATE)) {
-			$this->gDB->createTable(static::TABLE_UDVLASTUPDATE, $fields);
-			$this->gDB->addPrimaryKey(static::TABLE_UDVLASTUPDATE, array('usr_id'));
+		if(!$this->gDB->tableExists(static::TABLE_LASTUPDATE)) {
+			$this->gDB->createTable(static::TABLE_LASTUPDATE, $fields);
+			$this->gDB->addPrimaryKey(static::TABLE_LASTUPDATE, array('usr_id'));
 		}
 	}
-
-
 }

@@ -7,9 +7,9 @@ require_once("./Services/UIComponent/classes/class.ilUserInterfaceHookPlugin.php
 /**
  * Create a form in an overlay to have the user validate his/her personal data.
  */
-class ilUserdataValidationPlugin extends ilUserInterfaceHookPlugin {
+class ilUserDataValidationPromptPlugin extends ilUserInterfaceHookPlugin {
 	function getPluginName() {
-		return "UserdataValidation";
+		return "UserDataValidationPrompt";
 	}
 
 

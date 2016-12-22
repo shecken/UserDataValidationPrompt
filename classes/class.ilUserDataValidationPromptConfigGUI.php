@@ -4,12 +4,12 @@
 require_once("./Services/Component/classes/class.ilPluginConfigGUI.php");
 require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
 
-use CaT\Plugins\UserdataValidation;
+use CaT\Plugins\UserDataValidationPrompt;
 /**
- * Configuration GUI for the UserdataValidation plugin
+ * Configuration GUI for the UserDataValidationPrompt plugin
  *
  */
-class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
+class ilUserDataValidationPromptConfigGUI extends ilPluginConfigGUI {
 
 	const CMD_CONF_UI = "configure";
 	const CMD_SAVE = "storePluginSettings";
@@ -30,7 +30,7 @@ class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
 	protected $txt;
 
 	/**
-	 * @var UserdataValidation\ilSettings
+	 * @var UserDataValidationPrompt\ilSettings
 	 */
 	protected $settings;
 
@@ -39,7 +39,7 @@ class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
 		global $tpl, $ilCtrl, $ilToolbar;
 		$this->gTpl = $tpl;
 		$this->gCtrl = $ilCtrl;
-		$this->settings = new UserdataValidation\ilSettings();
+		$this->settings = new UserDataValidationPrompt\ilSettings();
 	}
 
 	/**
@@ -49,14 +49,13 @@ class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
 	*/
 	public function performCommand($cmd) {
 		$this->txt = $this->plugin_object->txtClosure();
-
 		switch ($cmd) {
 			case self::CMD_CONF_UI:
 			case self::CMD_SAVE:
 				$this->$cmd();
 				break;
 			default:
-				throw new \Exception("ilUserdataValidationConfigGUI: CMD ".$cmd." not found");
+				throw new \Exception("ilUserDataValidationPromptConfigGUI: CMD ".$cmd." not found");
 		}
 	}
 
@@ -110,11 +109,11 @@ class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
 	private function initForm() {
 		$form = new \ilPropertyFormGUI();
 
-		$ni = new \ilNumberInputGUI($this->txt('interval'), UserdataValidation\ilSettings::F_INTERVAL);
+		$ni = new \ilNumberInputGUI($this->txt('interval'), UserDataValidationPrompt\ilSettings::F_INTERVAL);
 		$ni->setRequired(true);
 		$form->addItem($ni);
 
-		$ta = new \ilTextAreaInputGUI($this->txt('description'), UserdataValidation\ilSettings::F_DESCRIPTION);
+		$ta = new \ilTextAreaInputGUI($this->txt('description'), UserDataValidationPrompt\ilSettings::F_DESCRIPTION);
 		$form->addItem($ta);
 
 		$form->setFormAction($this->gCtrl->getFormAction($this));
@@ -130,7 +129,7 @@ class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
 	 */
 	private function validateEntries($post, $form) {
 		$res = true;
-		$k = UserdataValidation\ilSettings::F_INTERVAL;
+		$k = UserDataValidationPrompt\ilSettings::F_INTERVAL;
 		if(! $this->settings->validateInterval($post[$k])) {
 			$res = false;
 			$item = $form->getItemByPostVar($k);
@@ -148,5 +147,4 @@ class ilUserdataValidationConfigGUI extends ilPluginConfigGUI {
 		$txt = $this->txt;
 		return $txt($code);
 	}
-
 }
