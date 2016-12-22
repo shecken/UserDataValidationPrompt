@@ -115,7 +115,10 @@ class ilUserDataValidationPromptConfigGUI extends ilPluginConfigGUI {
 		$ni->setRequired(true);
 		$form->addItem($ni);
 
-		$ta = new \ilTextAreaInputGUI($this->txt('description'), UserDataValidationPrompt\ilSettings::F_DESCRIPTION);
+		$ta = new \ilTextInputGUI($this->txt('title'), UserDataValidationPrompt\ilSettings::F_TITLE);
+		$form->addItem($ta);
+
+		$ta = new \ilTextInputGUI($this->txt('description'), UserDataValidationPrompt\ilSettings::F_DESCRIPTION);
 		$form->addItem($ta);
 
 		$form->setFormAction($this->gCtrl->getFormAction($this));

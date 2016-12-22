@@ -172,6 +172,7 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		}
 
 		//user should update, session is not set or validation failed: show dialog
+		$title = $this->actions->pluginSettingsTitle();
 		$description = $this->actions->pluginSettingsDescription();
 		$formhtml = $form->getHtml();
 
@@ -187,7 +188,7 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		<div>
 			<div class="catTitleTextContentsWrapper">
 				<div>
-					<h1 class="catTitleHeader">Überprüfen Sie Ihre Daten!</h1>
+					<h1 class="catTitleHeader">$title</h1>
 				</div>
 				<div class="ilClearFloat catSubtitle" style="width:750px;">
 					$description

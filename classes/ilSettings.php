@@ -10,6 +10,7 @@ class ilSettings {
 
 	const SETTINGS_MODULE = "gevudvp";
 	const F_INTERVAL = "interval";
+	const F_TITLE = "title";
 	const F_DESCRIPTION = "description";
 
 	/**
@@ -33,6 +34,7 @@ class ilSettings {
 			throw new \InvalidArgumentException('UserDataValidationPrompt.ilSettings: interval must be apositive number', 1);
 		}
 		$this->settings->set(self::F_INTERVAL, $post[self::F_INTERVAL]);
+		$this->settings->set(self::F_TITLE, $post[self::F_TITLE]);
 		$this->settings->set(self::F_DESCRIPTION, $post[self::F_DESCRIPTION]);
 	}
 
@@ -43,7 +45,8 @@ class ilSettings {
 	 */
 	public function settings() {
 		return array(
-			self::F_INTERVAL => $this->settings->get(self::F_INTERVAL, 0),
+			self::F_INTERVAL => $this->settings->get(self::F_INTERVAL, 365),
+			self::F_TITLE => $this->settings->get(self::F_TITLE, ''),
 			self::F_DESCRIPTION => $this->settings->get(self::F_DESCRIPTION, '')
 		);
 	}

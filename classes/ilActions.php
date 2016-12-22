@@ -42,6 +42,16 @@ class ilActions {
 	}
 
 	/**
+	 * Returns the title-text to be shown in the dialog
+	 *
+	 * @return 	string
+	 */
+	public function pluginSettingsTitle() {
+		$settings = $this->settings->settings();
+		return $settings[ilSettings::F_TITLE];
+	}
+
+	/**
 	 * Returns the description-text to be shown in the dialog
 	 *
 	 * @return 	string
