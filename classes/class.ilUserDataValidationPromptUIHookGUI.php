@@ -43,7 +43,7 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 	 * initialize actions for plugin
 	 */
 	private function initActions() {
-		if(	$this->gUser->getId() != 0) {
+		if(	$this->gUser && $this->gUser->getId() != 0) {
 			$db = new UserDataValidationPrompt\ilDB($this->gDB);
 			$settings = new UserDataValidationPrompt\ilSettings();
 			$user_utils = gevUserUtils::getInstance($this->gUser->getId());
