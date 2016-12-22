@@ -3,8 +3,10 @@
 
 require_once("./Services/Component/classes/class.ilPluginConfigGUI.php");
 require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
+require_once(__DIR__."/ilSettings.php");
 
 use CaT\Plugins\UserDataValidationPrompt;
+
 /**
  * Configuration GUI for the UserDataValidationPrompt plugin
  *

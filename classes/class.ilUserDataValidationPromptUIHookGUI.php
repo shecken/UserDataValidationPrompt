@@ -60,7 +60,6 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 			'generic' => array(
 				'firstname' => $this->gUser->getFirstname(),
 				'lastname' => $this->gUser->getLastname(),
-				'birthday' => $this->gUser->getBirthday(),
 			),
 			'buiz' => array(
 				'street' => $this->gUser->getStreet(),
@@ -89,11 +88,6 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 
 			foreach($fields as $field => $value) {
 				switch($field) {
-					case 'birthday':
-						$inp = new ilBirthdayInputGUI($this->gLng->txt($field), $field);
-						$inp->setShowEmpty(true);
-						$inp->setStartYear(1900);
-						break;
 					default:
 						$label = $field;
 						if(substr($label, 0, 2) === 'p_') {

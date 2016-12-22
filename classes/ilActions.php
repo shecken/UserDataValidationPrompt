@@ -145,8 +145,6 @@ class ilActions {
 	*/
 	public function updateUserData($userdata) {
 		$usr = $this->uutils->getUser();
-		$bday = $userdata['birthday']["date"];
-		$usr->setBirthday($bday);
 		$usr->setFirstname($userdata['firstname']);
 		$usr->setLastname($userdata['lastname']);
 		$usr->setStreet($userdata['street']);
