@@ -46,7 +46,7 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		if(	$this->gUser && $this->gUser->getId() != 0) {
 			$db = new UserDataValidationPrompt\ilDB($this->gDB);
 			$settings = new UserDataValidationPrompt\ilSettings();
-			$user_utils = gevUserUtils::getInstance($this->gUser->getId());
+			$user_utils = gevUserUtils::getInstance((int)$this->gUser->getId());
 			$this->actions = new UserDataValidationPrompt\ilActions($db, $settings, $user_utils);
 		}
 	}
@@ -124,7 +124,6 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 	 * @return	string
 	 */
 	protected function txt($code) {
-		assert('is_string($code)');
 		$txt = $this->txt;
 		return $txt($code);
 	}
@@ -137,14 +136,14 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		if ( 	$a_part != "template_get"
 			|| 	$a_par["tpl_id"] != "Services/MainMenu/tpl.main_menu.html"
 			||	$this->actions == null
-			||	$this->actions->sessionStatus($this->gUser->getId())
+			||	$this->actions->sessionStatus((int)$this->gUser->getId())
 		   ) {
 			return parent::getHTML($a_comp, $a_part, $a_par);
 		}
 
-		if($this->actions->shouldUserUpdate($this->gUser->getId()) === false) {
+		if($this->actions->shouldUserUpdate((int)$this->gUser->getId()) === false) {
 			//interval not reached, do not bother again for this session
-			$this->actions->validateSession($this->gUser->getId());
+			$this->actions->validateSession((int)$this->gUser->getId());
 			return parent::getHTML($a_comp, $a_part, $a_par);
 		}
 
@@ -158,8 +157,8 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 			if($form->checkInput()) {
 				//update data, do not bother again in this session
 				$this->actions->updateUserData($_POST);
-				$this->actions->storeLastUpdateOfUser($this->gUser->getId());
-				$this->actions->validateSession($this->gUser->getId());
+				$this->actions->storeLastUpdateOfUser((int)$this->gUser->getId());
+				$this->actions->validateSession((int)$this->gUser->getId());
 				return parent::getHTML($a_comp, $a_part, $a_par);
 
 			} else {
