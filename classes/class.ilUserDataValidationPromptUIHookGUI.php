@@ -59,17 +59,18 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		$formitems = array(
 			'generic' => array(
 				'firstname' => $this->gUser->getFirstname(),
-				'lastname' => $this->gUser->getLastname(),
+				'lastname' => $this->gUser->getLastname()
 			),
 			'buiz' => array(
 				'street' => $this->gUser->getStreet(),
 				'zipcode' => $this->gUser->getZipcode(),
 				'city' => $this->gUser->getCity(),
+				'email' => $this->gUser->getEmail()
 			),
 			'priv' => array( //from user utils!
 				'p_street' => $this->actions->udfPrivateStreet(),
 				'p_zipcode' => $this->actions->udfPrivateZipcode(),
-				'p_city' => $this->actions->udfPrivateCity(),
+				'p_city' => $this->actions->udfPrivateCity()
 			)
 
 		);

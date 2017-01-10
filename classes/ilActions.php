@@ -108,6 +108,10 @@ class ilActions {
 	 * @return 	boolean
 	 */
 	public function shouldUserUpdate($usr_id) {
+		if(in_array($usr_id, $this->settings->getToIgnoreUserIds())) {
+			return false;
+		}
+
 		include_once('Services/Calendar/classes/class.ilDateTime.php');
 		$lastup = substr($this->lastUpdateOfUser($usr_id), 0, 10);
 		$last = new \ilDate($lastup, IL_CAL_DATE);
@@ -160,6 +164,7 @@ class ilActions {
 		$usr->setStreet(trim($userdata['street']));
 		$usr->setZipcode(trim($userdata['zipcode']));
 		$usr->setCity(trim($userdata['city']));
+		$usr->setEmail(trim($userdata['email']));
 		$usr->update();
 		$this->uutils->setPrivateStreet(trim($userdata['p_street']));
 		$this->uutils->setPrivateCity(trim($userdata['p_city']));

@@ -20,6 +20,8 @@ class ilSettings {
 
 	public function __construct() {
 		$this->settings = new \ilSetting(self::SETTINGS_MODULE);
+		require_once("Services/GEV/Utils/classes/class.gevSettings.php");
+		$this->gev_settings = \gevSettings::getInstance();
 	}
 
 	/**
@@ -64,4 +66,12 @@ class ilSettings {
 		return true;
 	}
 
+	/**
+	 * Get user ids of user to ignore
+	 *
+	 * @return int[]
+	 */
+	public function getToIgnoreUserIds() {
+		return array($this->gev_settings->getAgentOfferUserId());
+	}
 }
