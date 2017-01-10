@@ -41,7 +41,7 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 	 * initialize actions for plugin
 	 */
 	private function initActions() {
-		$this->actions = $this->plugin_object->getActions();
+		$this->actions = $this->plugin_object->getActions((int)$this->gUser->getId());
 	}
 
 	/**
@@ -132,14 +132,14 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		if ( 	$a_part != "template_get"
 			|| 	$a_par["tpl_id"] != "Services/MainMenu/tpl.main_menu.html"
 			||	$this->actions === null
-			||	$this->actions->sessionStatus((int)$this->gUser->getId())
+			||	$this->actions->sessionStatus()
 		   ) {
 			return parent::getHTML($a_comp, $a_part, $a_par);
 		}
 
-		if($this->actions->shouldUserUpdate((int)$this->gUser->getId()) === false) {
+		if($this->actions->shouldUserUpdate() === false) {
 			//interval not reached, do not bother again for this session
-			$this->actions->validateSession((int)$this->gUser->getId());
+			$this->actions->validateSession();
 			return parent::getHTML($a_comp, $a_part, $a_par);
 		}
 
@@ -153,8 +153,8 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 			if($form->checkInput()) {
 				//update data, do not bother again in this session
 				$this->actions->updateUserData($_POST);
-				$this->actions->storeLastUpdateOfUser((int)$this->gUser->getId());
-				$this->actions->validateSession((int)$this->gUser->getId());
+				$this->actions->storeLastUpdate();
+				$this->actions->validateSession();
 				return parent::getHTML($a_comp, $a_part, $a_par);
 
 			} else {

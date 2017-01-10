@@ -30,14 +30,20 @@ class ilUserDataValidationPromptPlugin extends ilUserInterfaceHookPlugin {
 		};
 	}
 
-	public function getActions() {
+	/**
+	 * Get the plugin actions
+	 *
+	 * @param int 	$user_id
+	 *
+	 * @return UserDataValidationPrompt\ilActions | null
+	 */
+	public function getActions($user_id) {
 		if($this->actions === null) {
-			global $ilUser;
-				if($ilUser && (int)$ilUser->getId() !== 0) {
-					$this->actions = new UserDataValidationPrompt\ilActions(
+			if($user_id !== 0) {
+				$this->actions = new UserDataValidationPrompt\ilActions(
 					$this->getUserDataValidationPromptDB(),
 					$this->getSettings(),
-					$this->getUserUtils((int)$ilUser->getId()),
+					$this->getUserUtils($user_id),
 					$this->getGevSettings()
 				);
 			}

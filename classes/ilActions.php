@@ -73,8 +73,8 @@ class ilActions {
 	 *
 	 * @return 	\ilDate
 	 */
-	public function lastUpdateOfUser($usr_id) {
-		$dat = $this->db->read($usr_id);
+	protected function lastUpdate() {
+		$dat = $this->db->read($this->getUserId());
 		return $dat;
 	}
 
@@ -82,8 +82,8 @@ class ilActions {
 	 * Save the time, the user has last updated his/her data
 	 * (which is now..)
 	 */
-	public function storeLastUpdateOfUser($usr_id) {
-		$this->db->update($usr_id);
+	public function storeLastUpdate() {
+		$this->db->update($this->getUserId());
 	}
 
 	/**
@@ -93,8 +93,8 @@ class ilActions {
 	 * @param  	int 	$usr_id
 	 * @return 	boolean
 	 */
-	public function sessionStatus($usr_id) {
-		return $_COOKIE["gevudvp"][$usr_id] === "gevudvp";
+	public function sessionStatus() {
+		return $_COOKIE["gevudvp"][$this->getUserId()] === "gevudvp";
 	}
 
 	/**
@@ -102,8 +102,8 @@ class ilActions {
 	 *
 	 * @param  	int 	$usr_id
 	 */
-	public function validateSession($usr_id) {
-		setcookie("gevudvp[".$usr_id."]", "gevudvp");
+	public function validateSession() {
+		setcookie("gevudvp[".$this->getUserId()."]", "gevudvp");
 	}
 
 	/**
@@ -113,13 +113,18 @@ class ilActions {
 	 * @param  	int 	$usr_id
 	 * @return 	boolean
 	 */
-	public function shouldUserUpdate($usr_id) {
+	public function shouldUserUpdate() {
+		$usr_id = $this->getUserId();
 		if(in_array($usr_id, $this->getToIgnoreUserIds())) {
 			return false;
 		}
 
+		if($this->isExpressUser()) {
+			return false;
+		}
+
 		include_once('Services/Calendar/classes/class.ilDateTime.php');
-		$lastup = substr($this->lastUpdateOfUser($usr_id), 0, 10);
+		$lastup = substr($this->lastUpdate($usr_id), 0, 10);
 		$last = new \ilDate($lastup, IL_CAL_DATE);
 		$now = new \ilDate(time(),IL_CAL_UNIX);
 
@@ -185,5 +190,13 @@ class ilActions {
 	 */
 	protected function getToIgnoreUserIds() {
 		return array(0, $this->gev_settings->getAgentOfferUserId());
+	}
+
+	protected function isExpressUser() {
+		return $this->uutils->isExpressUser();
+	}
+
+	protected function getUserId() {
+		return (int)$this->uutils->getId();
 	}
 }
