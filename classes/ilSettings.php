@@ -65,13 +65,4 @@ class ilSettings {
 		}
 		return true;
 	}
-
-	/**
-	 * Get user ids of user to ignore
-	 *
-	 * @return int[]
-	 */
-	public function getToIgnoreUserIds() {
-		return array($this->gev_settings->getAgentOfferUserId());
-	}
 }

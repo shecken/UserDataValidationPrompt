@@ -24,11 +24,17 @@ class ilActions {
 	 */
 	protected $uutils;
 
+	/**
+	 * @var \gevSettings
+	 */
+	protected $gev_settings;
 
-	public function __construct($db, $settings, $user_utils) {
+
+	public function __construct($db, $settings, $user_utils, $gev_settings) {
 		$this->db = $db;
 		$this->settings = $settings;
 		$this->uutils = $user_utils;
+		$this->gev_settings = $gev_settings;
 	}
 
 	/**
@@ -108,7 +114,7 @@ class ilActions {
 	 * @return 	boolean
 	 */
 	public function shouldUserUpdate($usr_id) {
-		if(in_array($usr_id, $this->settings->getToIgnoreUserIds())) {
+		if(in_array($usr_id, $this->getToIgnoreUserIds())) {
 			return false;
 		}
 
@@ -170,5 +176,14 @@ class ilActions {
 		$this->uutils->setPrivateCity(trim($userdata['p_city']));
 		$this->uutils->setPrivateZipcode(trim($userdata['p_zipcode']));
 
+	}
+
+	/**
+	 * Get user ids of user to ignore
+	 *
+	 * @return int[]
+	 */
+	protected function getToIgnoreUserIds() {
+		return array(0, $this->gev_settings->getAgentOfferUserId());
 	}
 }
