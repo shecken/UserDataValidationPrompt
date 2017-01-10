@@ -8,7 +8,6 @@ require_once( __DIR__ ."/ilSettings.php");
 require_once( __DIR__ ."/ilActions.php");
 //require_once "./Services/User/classes/class.ilObjUserGUI.php";
 require_once('./Services/Form/classes/class.ilPropertyFormGUI.php');
-require_once('./Services/GEV/Utils/classes/class.gevUserUtils.php');
 
 use CaT\Plugins\UserDataValidationPrompt;
 
@@ -36,19 +35,13 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 		$this->gDB = $ilDB;
 		$this->gLng = $lng;
 		$this->gCtrl = $ilCtrl;
-		$this->initActions();
 	}
 
 	/**
 	 * initialize actions for plugin
 	 */
 	private function initActions() {
-		if(	$this->gUser && $this->gUser->getId() != 0) {
-			$db = new UserDataValidationPrompt\ilDB($this->gDB);
-			$settings = new UserDataValidationPrompt\ilSettings();
-			$user_utils = gevUserUtils::getInstance((int)$this->gUser->getId());
-			$this->actions = new UserDataValidationPrompt\ilActions($db, $settings, $user_utils);
-		}
+		$this->actions = $this->plugin_object->getActions();
 	}
 
 	/**
@@ -134,9 +127,11 @@ class ilUserDataValidationPromptUIHookGUI extends ilUIHookPluginGUI {
 	 * @inheritdoc
 	 */
 	function getHTML($a_comp, $a_part, $a_par = array()) {
+		$this->initActions();
+
 		if ( 	$a_part != "template_get"
 			|| 	$a_par["tpl_id"] != "Services/MainMenu/tpl.main_menu.html"
-			||	$this->actions == null
+			||	$this->actions === null
 			||	$this->actions->sessionStatus((int)$this->gUser->getId())
 		   ) {
 			return parent::getHTML($a_comp, $a_part, $a_par);
